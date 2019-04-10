@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AI_Demo_Console
+namespace SharedServices
 {
     public class AIDemoService : IHostedService, IDisposable
     {

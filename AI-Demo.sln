@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI-Demo-Console", "AI-Demo-Console\AI-Demo-Console.csproj", "{D47E95E1-EE1E-4443-9805-909DC945F08B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AI-Demo-Console-Serilog", "AI-Demo-Console-Serilog\AI-Demo-Console-Serilog.csproj", "{3CAED86D-F160-4FD5-8584-7C46D6F1777C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedServices", "SharedServices\SharedServices.csproj", "{E85576A7-13D9-4E0E-B135-5ABD37912711}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{D47E95E1-EE1E-4443-9805-909DC945F08B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D47E95E1-EE1E-4443-9805-909DC945F08B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D47E95E1-EE1E-4443-9805-909DC945F08B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CAED86D-F160-4FD5-8584-7C46D6F1777C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CAED86D-F160-4FD5-8584-7C46D6F1777C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CAED86D-F160-4FD5-8584-7C46D6F1777C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CAED86D-F160-4FD5-8584-7C46D6F1777C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E85576A7-13D9-4E0E-B135-5ABD37912711}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E85576A7-13D9-4E0E-B135-5ABD37912711}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E85576A7-13D9-4E0E-B135-5ABD37912711}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E85576A7-13D9-4E0E-B135-5ABD37912711}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

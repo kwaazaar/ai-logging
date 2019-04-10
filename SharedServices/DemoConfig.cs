@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AI_Demo_Console
+namespace SharedServices
 {
     public class DemoConfig
     {
