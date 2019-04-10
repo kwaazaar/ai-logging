@@ -1,12 +1,40 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace AI_Demo_Console
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var builder = new HostBuilder()
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                    config.AddEnvironmentVariables();
+                    if (args != null) { config.AddCommandLine(args); }
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddApplicationInsightsKubernetesEnricher();
+                    services.Configure<DemoConfig>(hostContext.Configuration.GetSection("DemoConfig"));
+                    services.AddSingleton<IHostedService, AIDemoService>();
+                })
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    var config = hostingContext.Configuration;
+
+                    // https://docs.microsoft.com/en-Us/azure//azure-monitor/app/ilogger
+                    logging.AddConfiguration(config.GetSection("Logging"));
+                    logging.AddApplicationInsights(config["ApplicationInsights:InstrumentationKey"]); // default options are fine
+                    logging.AddConsole();
+                });
+           
+
+            await builder.RunConsoleAsync();
         }
     }
 }
