@@ -1,7 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 using SharedServices;
 using System.Threading.Tasks;
 
@@ -24,16 +28,20 @@ namespace AI_Demo_Console
                     services.Configure<DemoConfig>(hostContext.Configuration.GetSection("DemoConfig"));
                     services.AddSingleton<IHostedService, AIDemoService>();
                 })
-                .ConfigureLogging((hostingContext, logging) =>
+
+                // https://github.com/serilog/serilog-extensions-hosting
+                .UseSerilog((hostingContext, logging) =>
                 {
                     var config = hostingContext.Configuration;
 
-                    // https://docs.microsoft.com/en-Us/azure//azure-monitor/app/ilogger
-                    logging.AddConfiguration(config.GetSection("Logging"));
-                    logging.AddApplicationInsights(config["ApplicationInsights:InstrumentationKey"]); // default options are fine
-                    logging.AddConsole();
+                    TelemetryConfiguration.Active.InstrumentationKey = config["ApplicationInsights:InstrumentationKey"];
+                    logging
+                        .MinimumLevel.Verbose() // Lowest level
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                        .Enrich.FromLogContext()
+                        .WriteTo.ApplicationInsights(TelemetryConfiguration.Active, TelemetryConverter.Traces)
+                        .WriteTo.Console();
                 });
-           
 
             await builder.RunConsoleAsync();
         }

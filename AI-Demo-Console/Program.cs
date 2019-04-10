@@ -24,11 +24,12 @@ namespace AI_Demo_Console
                     services.Configure<DemoConfig>(hostContext.Configuration.GetSection("DemoConfig"));
                     services.AddSingleton<IHostedService, AIDemoService>();
                 })
+
+                // https://docs.microsoft.com/en-Us/azure//azure-monitor/app/ilogger
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     var config = hostingContext.Configuration;
 
-                    // https://docs.microsoft.com/en-Us/azure//azure-monitor/app/ilogger
                     logging.AddConfiguration(config.GetSection("Logging"));
                     logging.AddApplicationInsights(config["ApplicationInsights:InstrumentationKey"]); // default options are fine
                     logging.AddConsole();
