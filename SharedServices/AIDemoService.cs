@@ -39,28 +39,28 @@ namespace SharedServices
             _timerHitCount++;
             _logger.Log(LogLevel.Trace, "DoWork (hitcount={hitcount})", _timerHitCount);
 
-            if (_timerHitCount % 2 == 0)
+            if (_timerHitCount % 2 == 0 && RandomBool())
             {
                 _evtLogger.LogEvent("KlantIngelogd", "robert");
             }
 
-            if (_timerHitCount % 3 == 0)
+            if (_timerHitCount % 3 == 0 && RandomBool())
             {
                 _evtLogger.LogEvent("ProductInWinkelwagen", "robert");
             }
 
-            if (_timerHitCount % 10 == 0)
+            if (_timerHitCount % 10 == 0 && RandomBool())
             {
                 _evtLogger.LogEvent("BestellingGeplaatst", "robert");
                 _logger.Log(LogLevel.Information, "Bestelling is geplaatst (hitcount={hitcount})", _timerHitCount);
             }
 
-            if (_timerHitCount % 11 == 0)
+            if (_timerHitCount % 11 == 0 && RandomBool())
             {
                 _evtLogger.LogEvent("BestellingBetaald", "robert");
             }
 
-            if (_timerHitCount % 30 == 0)
+            if (_timerHitCount % 30 == 0 && RandomBool())
             {
                 _logger.Log(LogLevel.Error, 
                     new InvalidOperationException("Fout opgetreden in bestelproces"), 
@@ -71,6 +71,13 @@ namespace SharedServices
             {
                 _lifetimeManager.StopApplication();
             }
+        }
+
+        private bool RandomBool()
+        {
+            var rnd = new Random(DateTime.Now.Second);
+            var next = rnd.NextDouble();
+            return next > 0.20f;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
