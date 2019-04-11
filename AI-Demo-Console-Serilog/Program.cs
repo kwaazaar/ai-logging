@@ -26,7 +26,9 @@ namespace AI_Demo_Console
                 {
                     services.AddApplicationInsightsKubernetesEnricher();
                     services.Configure<DemoConfig>(hostContext.Configuration.GetSection("DemoConfig"));
+                    services.AddSingleton<TelemetryClient>();
                     services.AddSingleton<IHostedService, AIDemoService>();
+                    services.AddSingleton<IEventLogger, EventLogger>();
                 })
 
                 // https://github.com/serilog/serilog-extensions-hosting

@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,24 +12,17 @@ namespace SharedServices
         private readonly IApplicationLifetime _lifetimeManager;
         private readonly ILogger _logger;
         private readonly IOptions<DemoConfig> _demoConfig;
+        private readonly IEventLogger _evtLogger;
+
         private Timer _timer;
         private int _timerHitCount;
-        private Dictionary<int, LogLevel> _config = new Dictionary<int, LogLevel>
-        {
-            { 1, LogLevel.Trace },
-            { 2, LogLevel.Debug },
-            { 3, LogLevel.Information },
-            { 4, LogLevel.Warning },
-            { 5, LogLevel.Error },
-            { 6, LogLevel.Critical },
-            { 7, LogLevel.None },
-        };
 
-        public AIDemoService(IApplicationLifetime lifetimeManager, ILogger<AIDemoService> logger, IOptions<DemoConfig> demoConfig)
+        public AIDemoService(IApplicationLifetime lifetimeManager, ILogger<AIDemoService> logger, IOptions<DemoConfig> demoConfig, IEventLogger evtLogger)
         {
             _lifetimeManager = lifetimeManager;
             _logger = logger;
             _demoConfig = demoConfig;
+            _evtLogger = evtLogger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -46,28 +37,40 @@ namespace SharedServices
         private void DoWork(object state)
         {
             _timerHitCount++;
-            var level = GetLogLevel(_timerHitCount);
-            if (level < LogLevel.Error)
+            _logger.Log(LogLevel.Trace, "DoWork (hitcount={hitcount})", _timerHitCount);
+
+            if (_timerHitCount % 2 == 0)
             {
-                _logger.Log(level, "Structured message @ level:{level} (hitcount={hitcount})", level, _timerHitCount);
+                _evtLogger.LogEvent("KlantIngelogd", "robert");
             }
-            else
+
+            if (_timerHitCount % 3 == 0)
             {
-                _logger.Log(level,
-                    new InvalidOperationException(String.Format("Structured message @ level:{0} (hitcount ={1})", level, _timerHitCount)),
-                    "Structured message @ level:{level} (hitcount={hitcount})", level, _timerHitCount);
+                _evtLogger.LogEvent("ProductInWinkelwagen", "robert");
+            }
+
+            if (_timerHitCount % 10 == 0)
+            {
+                _evtLogger.LogEvent("BestellingGeplaatst", "robert");
+                _logger.Log(LogLevel.Information, "Bestelling is geplaatst (hitcount={hitcount})", _timerHitCount);
+            }
+
+            if (_timerHitCount % 11 == 0)
+            {
+                _evtLogger.LogEvent("BestellingBetaald", "robert");
+            }
+
+            if (_timerHitCount % 30 == 0)
+            {
+                _logger.Log(LogLevel.Error, 
+                    new InvalidOperationException("Fout opgetreden in bestelproces"), 
+                    "Fout opgetreden (hitcount={hitcount})", _timerHitCount);
             }
 
             if (_timerHitCount >= _demoConfig.Value.StopAfter)
             {
                 _lifetimeManager.StopApplication();
             }
-        }
-
-        private LogLevel GetLogLevel(int timerHitCount)
-        {
-            var key = _config.Keys.Reverse().FirstOrDefault(k => timerHitCount % k == 0);
-            return _config[key];
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

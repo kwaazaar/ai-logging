@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,9 @@ namespace AI_Demo_Console
                 {
                     services.AddApplicationInsightsKubernetesEnricher();
                     services.Configure<DemoConfig>(hostContext.Configuration.GetSection("DemoConfig"));
+                    services.AddSingleton<TelemetryClient>();
                     services.AddSingleton<IHostedService, AIDemoService>();
+                    services.AddSingleton<IEventLogger, EventLogger>();
                 })
 
                 // https://docs.microsoft.com/en-Us/azure//azure-monitor/app/ilogger
