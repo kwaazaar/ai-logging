@@ -46,6 +46,7 @@ namespace AI_Demo_Console
                     logging.AddConsole();
 
                     // Expliciet toevoegen van ApplicationInsightsLoggerProvider is niet meer nodig. Zie: https://docs.microsoft.com/nl-nl/azure/azure-monitor/app/ilogger#aspnet-core-applications
+                    // In een ASP.NET Core app blijkt het echter niet te werken, zonder deze call :-s
                     //logging.AddApplicationInsights(config["ApplicationInsights:InstrumentationKey"]); // default options are fine
                 });
 

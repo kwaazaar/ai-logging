@@ -39,8 +39,7 @@ namespace AI_Demo_Console
                     services.AddSingleton<IEventLogger, EventLogger>();
                 })
 
-                // https://github.com/serilog/serilog-aspnetcore
-                // https://github.com/serilog/serilog-extensions-hosting
+                // https://github.com/serilog/serilog-aspnetcore (serilog-extensions-hosting is voor console apps, maar serilog-aspnetcore werkt net zo goed)
                 .UseSerilog((hostingContext, logging) =>
                 {
                     var config = hostingContext.Configuration;
