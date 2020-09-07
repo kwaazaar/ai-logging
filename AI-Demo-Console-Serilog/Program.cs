@@ -24,25 +24,34 @@ namespace AI_Demo_Console
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+                    var config = hostContext.Configuration;
+
+                    // ASP.NET Core: Microsoft.Extensions.Logging.ApplicationInsights
+                    //services.AddApplicationInsightsTelemetry(config["ApplicationInsights:InstrumentationKey"]);
+
+                    // Console app: Microsoft.ApplicationInsights.WorkerService
+                    services.AddApplicationInsightsTelemetryWorkerService(config["ApplicationInsights:InstrumentationKey"]);
+
                     services.AddApplicationInsightsKubernetesEnricher();
+
                     services.Configure<DemoConfig>(hostContext.Configuration.GetSection("DemoConfig"));
-                    services.AddSingleton<TelemetryClient>();
                     services.AddSingleton<IHostedService, AIDemoService>();
                     services.AddSingleton<IEventLogger, EventLogger>();
                 })
 
+                // https://github.com/serilog/serilog-aspnetcore
                 // https://github.com/serilog/serilog-extensions-hosting
                 .UseSerilog((hostingContext, logging) =>
                 {
                     var config = hostingContext.Configuration;
 
-                    TelemetryConfiguration.Active.InstrumentationKey = config["ApplicationInsights:InstrumentationKey"];
                     logging
                         .MinimumLevel.Verbose() // Lowest level
                         .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                        .Enrich.FromLogContext()
-                        .WriteTo.ApplicationInsights(TelemetryConfiguration.Active, TelemetryConverter.Traces)
-                        .WriteTo.Console();
+                        .Enrich.FromLogContext();
+                    logging.WriteTo.Console();
+
+                    logging.WriteTo.ApplicationInsights(config["ApplicationInsights:InstrumentationKey"], TelemetryConverter.Traces);
                 });
 
             await builder.RunConsoleAsync();

@@ -9,7 +9,7 @@ namespace SharedServices
 {
     public class AIDemoService : IHostedService, IDisposable
     {
-        private readonly IApplicationLifetime _lifetimeManager;
+        private readonly IHostApplicationLifetime _hostLifetimeManager;
         private readonly ILogger _logger;
         private readonly IOptions<DemoConfig> _demoConfig;
         private readonly IEventLogger _evtLogger;
@@ -17,9 +17,9 @@ namespace SharedServices
         private Timer _timer;
         private int _timerHitCount;
 
-        public AIDemoService(IApplicationLifetime lifetimeManager, ILogger<AIDemoService> logger, IOptions<DemoConfig> demoConfig, IEventLogger evtLogger)
+        public AIDemoService(IHostApplicationLifetime hostLifetimeManager, ILogger<AIDemoService> logger, IOptions<DemoConfig> demoConfig, IEventLogger evtLogger)
         {
-            _lifetimeManager = lifetimeManager;
+            _hostLifetimeManager = hostLifetimeManager;
             _logger = logger;
             _demoConfig = demoConfig;
             _evtLogger = evtLogger;
@@ -69,7 +69,7 @@ namespace SharedServices
 
             if (_timerHitCount >= _demoConfig.Value.StopAfter)
             {
-                _lifetimeManager.StopApplication();
+                _hostLifetimeManager.StopApplication();
             }
         }
 

@@ -12,6 +12,8 @@ namespace AI_Demo_Console
     {
         static async Task Main(string[] args)
         {
+            // https://docs.microsoft.com/en-Us/azure//azure-monitor/app/ilogger
+            
             var builder = new HostBuilder()
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
@@ -21,23 +23,31 @@ namespace AI_Demo_Console
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+                    var config = hostContext.Configuration;
+
+                    // ASP.NET Core: Microsoft.Extensions.Logging.ApplicationInsights
+                    //services.AddApplicationInsightsTelemetry(config["ApplicationInsights:InstrumentationKey"]);
+
+                    // Console app: Microsoft.ApplicationInsights.WorkerService
+                    services.AddApplicationInsightsTelemetryWorkerService(config["ApplicationInsights:InstrumentationKey"]);
+
                     services.AddApplicationInsightsKubernetesEnricher();
+
                     services.Configure<DemoConfig>(hostContext.Configuration.GetSection("DemoConfig"));
-                    services.AddSingleton<TelemetryClient>();
                     services.AddSingleton<IHostedService, AIDemoService>();
+                    
                     services.AddSingleton<IEventLogger, EventLogger>();
                 })
-
-                // https://docs.microsoft.com/en-Us/azure//azure-monitor/app/ilogger
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     var config = hostingContext.Configuration;
 
                     logging.AddConfiguration(config.GetSection("Logging"));
-                    logging.AddApplicationInsights(config["ApplicationInsights:InstrumentationKey"]); // default options are fine
                     logging.AddConsole();
+
+                    // Expliciet toevoegen van ApplicationInsightsLoggerProvider is niet meer nodig. Zie: https://docs.microsoft.com/nl-nl/azure/azure-monitor/app/ilogger#aspnet-core-applications
+                    //logging.AddApplicationInsights(config["ApplicationInsights:InstrumentationKey"]); // default options are fine
                 });
-           
 
             await builder.RunConsoleAsync();
         }
